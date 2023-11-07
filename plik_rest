@@ -1,0 +1,128 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.DevTools.V117.Network;
+using RestSharp;
+
+namespace RestSharpTests
+{
+    public class Tests
+    {
+        [SetUp]
+        public void Setup()
+        {
+        }
+
+        [Test]
+        public void Test1()
+        {
+            var client = new RestClient("http://localhost:3000/");
+
+            var request = new RestRequest("/posts/{postid}", Method.Get);
+
+            request.AddUrlSegment("postid", 1);
+
+            var content = client.Execute(request).Content;
+
+            Console.WriteLine(content);
+        }
+
+        [Test]
+        public void Test2()
+        {
+
+            var client = new RestClient("http://localhost:3000/");
+
+            var request = new RestRequest("/posts/{postid}", Method.Get);
+
+            request.AddUrlSegment("postid", 1);
+
+            var response = client.Execute(request);
+
+            JObject JSONObj = JObject.Parse(response.Content);
+
+            Console.WriteLine(JSONObj["author"]);
+
+            Assert.That(JSONObj["author"].ToString(), Is.EqualTo("typicode"), "Autor nie ten sam");
+
+        }
+
+        [Test]
+        public void Test3()
+        {
+
+            var client = new RestClient("http://localhost:3000/");
+
+            var request = new RestRequest("/posts/{postid}", Method.Get);
+
+            request.AddUrlSegment("postid", 1);
+
+            var content = client.Execute(request).Content;
+
+            var post = JsonConvert.DeserializeObject<Post>(content);
+
+            Assert.AreEqual(post.author, "typicode");
+        }
+        public class Post
+
+        {
+
+            public int id { get; set; }
+
+            public string title { get; set; }
+
+            public string author { get; set; }
+
+        }
+
+        [Test]
+        public void Test4()
+        {
+            var post = new Post
+            {
+                id= 3,
+                title = "Lord of the Rings",
+                author = "Tolkien"
+            };
+            
+
+            var client = new RestClient("http://localhost:3000/");
+            var request = new RestRequest("/posts/", Method.Post);
+            request.RequestFormat = DataFormat.Json;
+            request.AddJsonBody(post);
+            var content = client.Execute(request).Content;
+            var data = JsonConvert.DeserializeObject<Post>(content);
+            Assert.AreEqual(data.title, "Lord of the Rings");
+        }
+
+        class PostWire
+        {
+            public int id { get; set; }
+            public string title { get; set; }
+            public string author { get; set; }
+
+        }
+
+        [Test]
+        public void Test5()
+        {
+            RestOM restOM = new RestOM();
+            var content = restOM.SendRequestToServer("http://localhost:3000/")
+                .WithMethod(Method.Get)
+                .ToService("posts/1")
+                .GetResponse();
+
+            Console.WriteLine(content);
+        }
+
+
+        [Test]
+        public void SeleniumTesting()
+        {
+            IWebDriver driver = new ChromeDriver();
+            driver.Navigate().GoToUrl("http://www.wp.pl");
+            driver.Quit();
+        }
+    }
+}
