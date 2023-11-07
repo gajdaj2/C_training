@@ -1,1 +1,12 @@
-A
+ [Test]
+        public void TestJWTGet()
+        {
+            string key = „Berare xxx.xxx.xxx";
+            var client = new RestClient("http://localhost:3000/");
+            var request = new RestRequest("/660/posts/", Method.GET);
+            request.AddHeader("Authorization", key);
+            var content = client.Execute(request).Content;
+            var data = JsonConvert.DeserializeObject<List<Post>>(content);
+            Assert.AreEqual(data[1].author, "Karthik KK");
+        }
+
