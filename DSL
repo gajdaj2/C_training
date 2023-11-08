@@ -1,0 +1,52 @@
+using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RestSharpTests
+{
+    public  class RestOM
+    {
+        private string _url;
+        private Method _method;
+        private string _service;
+
+        public RestOM SendRequestToServer(string url)
+        {
+            _url = url;
+            return this;
+        }
+
+        public RestOM WithMethod(Method method)
+        {
+            _method = method;
+            return this;
+        }
+
+        public RestOM ToService(string service)
+        {
+            _service = service;
+            return this;
+        }
+
+        public RestOM WithParam(string param)
+        {
+            _url += param;
+            return this;
+        }
+
+        public String GetResponse()
+        {
+            var client = new RestClient(_url);
+
+            var request = new RestRequest(_service, Method.Get);
+
+            var content = client.Execute(request).Content;
+            Console.WriteLine(request.ToString);
+            return content;
+        }
+
+    }
+}
