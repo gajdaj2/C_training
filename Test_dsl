@@ -1,0 +1,10 @@
+    public void Test5()
+    {
+        RestOM restOM = new RestOM();
+        var content = restOM.SendRequestToServer("http://localhost:3000/")
+            .WithMethod(Method.Get)
+            .ToService("posts/1")
+            .GetResponse();
+
+        Console.WriteLine(content);
+    }
